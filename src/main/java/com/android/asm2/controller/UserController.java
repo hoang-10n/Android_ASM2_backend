@@ -5,7 +5,6 @@ import com.android.asm2.service.UserService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
@@ -47,7 +46,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/init/users", method = RequestMethod.GET)
-    public void initUserDB() throws IOException, JSONException {
+    public void initUserDB() throws IOException {
         String sURL = "https://my-json-server.typicode.com/hoang-10n/Android_ASM2/users";
         URL userDB = new URL(sURL);
 
@@ -58,15 +57,18 @@ public class UserController {
         connection.setRequestMethod("GET");
 
         BufferedReader bf = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        while((line = bf.readLine()) != null) {
+        while ((line = bf.readLine()) != null) {
             sb.append(line);
         }
 
         userService.deleteAll();
-
-        JSONArray array = new JSONArray(sb.toString());
-        for (int i = 0; i < array.length(); i++) {
-            userService.saveUser(new Gson().fromJson(array.getJSONObject(i).toString(), User.class));
+        try {
+            JSONArray array = new JSONArray(sb.toString());
+            for (int i = 0; i < array.length(); i++) {
+                userService.saveUser(new Gson().fromJson(array.getJSONObject(i).toString(), User.class));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

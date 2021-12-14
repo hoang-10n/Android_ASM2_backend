@@ -5,7 +5,6 @@ import com.android.asm2.service.ZoneService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
@@ -20,6 +19,7 @@ import java.util.List;
 public class ZoneController {
     @Autowired
     private ZoneService zoneService;
+
     @RequestMapping(path = "/api/zones", method = RequestMethod.GET)
     public List<Zone> getAllZones() {
         return zoneService.getAllZones();
@@ -46,7 +46,7 @@ public class ZoneController {
     }
 
     @RequestMapping(path = "/init/zones", method = RequestMethod.GET)
-    public void initZoneDB() throws IOException, JSONException {
+    public void initZoneDB() throws IOException {
         String sURL = "https://my-json-server.typicode.com/hoang-10n/Android_ASM2/zones";
         URL zoneDB = new URL(sURL);
 
@@ -57,15 +57,19 @@ public class ZoneController {
         connection.setRequestMethod("GET");
 
         BufferedReader bf = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        while((line = bf.readLine()) != null) {
+        while ((line = bf.readLine()) != null) {
             sb.append(line);
         }
 
         zoneService.deleteAll();
 
-        JSONArray array = new JSONArray(sb.toString());
-        for (int i = 0; i < array.length(); i++) {
-            zoneService.saveZone(new Gson().fromJson(array.getJSONObject(i).toString(), Zone.class));
+        try {
+            JSONArray array = new JSONArray(sb.toString());
+            for (int i = 0; i < array.length(); i++) {
+                zoneService.saveZone(new Gson().fromJson(array.getJSONObject(i).toString(), Zone.class));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

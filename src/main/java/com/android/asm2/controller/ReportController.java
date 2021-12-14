@@ -5,7 +5,6 @@ import com.android.asm2.service.ReportService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
@@ -47,7 +46,7 @@ public class ReportController {
     }
 
     @RequestMapping(path = "/init/reports", method = RequestMethod.GET)
-    public void initReportDB() throws IOException, JSONException {
+    public void initReportDB() throws IOException {
         String sURL = "https://my-json-server.typicode.com/hoang-10n/Android_ASM2/reports";
         URL reportDB = new URL(sURL);
 
@@ -64,9 +63,13 @@ public class ReportController {
 
         reportService.deleteAll();
 
-        JSONArray array = new JSONArray(sb.toString());
-        for (int i = 0; i < array.length(); i++) {
-            reportService.saveReport(new Gson().fromJson(array.getJSONObject(i).toString(), Report.class));
+        try {
+            JSONArray array = new JSONArray(sb.toString());
+            for (int i = 0; i < array.length(); i++) {
+                reportService.saveReport(new Gson().fromJson(array.getJSONObject(i).toString(), Report.class));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

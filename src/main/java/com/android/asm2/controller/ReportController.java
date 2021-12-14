@@ -1,0 +1,77 @@
+package com.android.asm2.controller;
+
+import com.android.asm2.model.Report;
+import com.android.asm2.service.ReportService;
+import com.google.gson.Gson;
+import com.google.gson.JsonParser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+@RestController
+@CrossOrigin(value = "*", allowedHeaders = "*")
+public class ReportController {
+    @Autowired
+    private ReportService reportService;
+
+    @RequestMapping(path = "/api/reports", method = RequestMethod.GET)
+    public List<Report> getAllReports() {
+        return reportService.getAllReports();
+    }
+
+    @RequestMapping(path = "/api/reports", method = RequestMethod.POST)
+    public boolean addReport(@RequestBody Report report) {
+        return reportService.addReport(report);
+    }
+
+    @RequestMapping(path = "/api/reports", method = RequestMethod.PUT)
+    public boolean updateReport(@RequestBody Report report) {
+        return reportService.updateReport(report);
+    }
+
+    @RequestMapping(path = "/api/reports/{zoneId}", method = RequestMethod.DELETE)
+    public Report deleteReport(@PathVariable String zoneId) {
+        return reportService.deleteReportByZoneId(zoneId);
+    }
+
+    @RequestMapping(path = "/api/reports/{zoneId}", method = RequestMethod.GET)
+    public Report getReportByZoneId(@PathVariable String zoneId) {
+        return reportService.getReportByZoneId(zoneId);
+    }
+
+    @RequestMapping(path = "/init/reports", method = RequestMethod.GET)
+    public void initReportDB() throws IOException, JSONException {
+        String sURL = "https://my-json-server.typicode.com/hoang-10n/Android_ASM2/reports";
+        URL reportDB = new URL(sURL);
+
+        StringBuilder sb = new StringBuilder();
+        String line;
+
+        HttpURLConnection connection = (HttpURLConnection) reportDB.openConnection();
+        connection.setRequestMethod("GET");
+
+        BufferedReader bf = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        while((line = bf.readLine()) != null) {
+            sb.append(line);
+        }
+
+        reportService.deleteAll();
+
+        JSONArray array = new JSONArray(sb.toString());
+        for (int i = 0; i < array.length(); i++) {
+            reportService.saveReport(new Gson().fromJson(array.getJSONObject(i).toString(), Report.class));
+        }
+    }
+}

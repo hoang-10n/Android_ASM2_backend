@@ -4,7 +4,8 @@ import com.android.asm2.model.User;
 import com.android.asm2.service.UserService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
@@ -63,7 +64,7 @@ public class UserController {
 
         userService.deleteAll();
         try {
-            JSONArray array = new JSONArray(sb.toString());
+            JSONArray array = JSONFactoryUtil.createJSONArray(sb.toString());
             for (int i = 0; i < array.length(); i++) {
                 userService.saveUser(new Gson().fromJson(array.getJSONObject(i).toString(), User.class));
             }

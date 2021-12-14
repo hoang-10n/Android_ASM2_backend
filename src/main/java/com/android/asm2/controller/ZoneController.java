@@ -3,8 +3,9 @@ package com.android.asm2.controller;
 import com.android.asm2.model.Zone;
 import com.android.asm2.service.ZoneService;
 import com.google.gson.Gson;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
@@ -64,7 +65,7 @@ public class ZoneController {
         zoneService.deleteAll();
 
         try {
-            JSONArray array = new JSONArray(sb.toString());
+            JSONArray array = JSONFactoryUtil.createJSONArray(sb.toString());
             for (int i = 0; i < array.length(); i++) {
                 zoneService.saveZone(new Gson().fromJson(array.getJSONObject(i).toString(), Zone.class));
             }

@@ -3,7 +3,6 @@ package com.android.asm2.controller;
 import com.android.asm2.model.Report;
 import com.android.asm2.service.ReportService;
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -11,14 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 @RestController
 @CrossOrigin(value = "*", allowedHeaders = "*")

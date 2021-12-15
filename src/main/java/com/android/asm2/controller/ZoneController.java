@@ -18,9 +18,25 @@ public class ZoneController {
         return zoneService.getAllZones();
     }
 
+    @RequestMapping(path = "/api/zones", method = RequestMethod.DELETE)
+    public void deleteAllZones() {
+        zoneService.deleteAll();
+    }
+
     @RequestMapping(path = "/api/zones", method = RequestMethod.POST)
     public boolean addZone(@RequestBody Zone zone) {
         return zoneService.addZone(zone);
+    }
+
+    @RequestMapping(path = "/api/zones/many", method = RequestMethod.POST)
+    public boolean addManyZones(@RequestBody Zone[] zones) {
+        try {
+            for (Zone zone : zones) zoneService.addZone(zone);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @RequestMapping(path = "/api/zones", method = RequestMethod.PUT)

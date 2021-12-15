@@ -18,9 +18,25 @@ public class ReportController {
         return reportService.getAllReports();
     }
 
+    @RequestMapping(path = "/api/reports", method = RequestMethod.DELETE)
+    public void deleteAllReports() {
+        reportService.deleteAll();
+    }
+
     @RequestMapping(path = "/api/reports", method = RequestMethod.POST)
     public boolean addReport(@RequestBody Report report) {
         return reportService.addReport(report);
+    }
+
+    @RequestMapping(path = "/api/reports/many", method = RequestMethod.POST)
+    public boolean addManyReports(@RequestBody Report[] reports) {
+        try {
+            for (Report report : reports) reportService.addReport(report);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @RequestMapping(path = "/api/reports", method = RequestMethod.PUT)

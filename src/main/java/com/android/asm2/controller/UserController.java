@@ -18,9 +18,25 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    @RequestMapping(path = "/api/users", method = RequestMethod.DELETE)
+    public void deleteAllUsers() {
+        userService.deleteAll();
+    }
+
     @RequestMapping(path = "/api/users", method = RequestMethod.POST)
     public boolean addUser(@RequestBody User user) {
         return userService.addUser(user);
+    }
+
+    @RequestMapping(path = "/api/users/many", method = RequestMethod.POST)
+    public boolean addManyUsers(@RequestBody User[] users) {
+        try {
+            for (User user : users) userService.addUser(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @RequestMapping(path = "/api/users", method = RequestMethod.PUT)
